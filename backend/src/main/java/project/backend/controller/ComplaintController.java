@@ -3,6 +3,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import project.backend.dto.Complaint.ComplaintRequestDTO;
@@ -34,12 +35,20 @@ public class ComplaintController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+    /**
+     * Get all complaints
+     */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<ComplaintResponseDTO>> getAllComplaints() {
         return ResponseEntity.ok(
                 complaintService.getAllComplaints()
         );
     }
+    /**
+     * Get all complaints by officer
+     */
+    @PreAuthorize("hasRole('OFFICER')")
     @GetMapping("/officer")
     public ResponseEntity<List<ComplaintResponseDTO>> getOfficerComplaints(
             Authentication authentication
@@ -49,6 +58,9 @@ public class ComplaintController {
                 complaintService.getOfficerComplaints(email)
         );
     }
+    /**
+     * Get complaint by id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ComplaintResponseDTO> getComplaintById(
             @PathVariable Long id) {
@@ -56,6 +68,10 @@ public class ComplaintController {
                 complaintService.getComplaintById(id)
         );
     }
+    /**
+     * Get all complaints by user
+     */
+    @PreAuthorize("hasRole('CITIZEN')")
     @GetMapping("/my")
     public ResponseEntity<List<ComplaintResponseDTO>> getMyComplaints(
             Authentication authentication) {
@@ -66,6 +82,10 @@ public class ComplaintController {
                 complaintService.getMyComplaints(user)
         );
     }
+    /**
+     * Update status of a complaint by officer
+     */
+    @PreAuthorize("hasRole('OFFICER')")
     @PatchMapping("/{id}/status")
     public ResponseEntity<ComplaintResponseDTO> updateStatus(
             @PathVariable Long id,
@@ -74,6 +94,9 @@ public class ComplaintController {
                 complaintService.updateStatus(id, status)
         );
     }
+    /**
+     * Delete a complaint by id
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComplaint(
             @PathVariable Long id) {

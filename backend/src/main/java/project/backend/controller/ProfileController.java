@@ -23,7 +23,6 @@ public class ProfileController {
                 userService.profile(email)
         );
     }
-
     @PutMapping
     public ResponseEntity<UserResponseDTO> updateProfile(
             @Valid @RequestBody UserRequestDTO dto,
