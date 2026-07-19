@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { PlusCircle } from "lucide-react";
-import { useAuth } from "@/components/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import api from "@/api/api";
 

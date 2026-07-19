@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import api from "@/api/api";
-import { useAuth } from "@/components/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 const formSchema = z.object({
   fullName: z.string().min(2, "Name is too short"),
   email: z.string().email("Invalid email"),
@@ -14,7 +14,7 @@ const formSchema = z.object({
 });
 export default function Register() {
   const navigate = useNavigate();
-  const{loadProfile}=useAuth()
+  const { loadProfile } = useAuth();
   const {
     register,
     handleSubmit,
@@ -26,11 +26,16 @@ export default function Register() {
   const onSubmit = async (data) => {
     try {
       const response = await api.post("/auth/register", data);
-      localStorage.setItem("token", response.data);
+      const token =
+        typeof response.data === "object" ? response.data.token : response.data;
+      if (!token) {
+        throw new Error("No token received from backend");
+      }
+      localStorage.setItem("token", token);
       await loadProfile();
       navigate("/");
       toast.success("Registration successful!");
-    }catch (error) {
+    } catch (error) {
       console.error("Registration error:", error);
       toast.error("Registration failed!");
     }
@@ -38,9 +43,7 @@ export default function Register() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="w-full max-w-md p-6 border rounded-xl bg-accent dark:bg-accent-dark">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Register
-        </h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <Input placeholder="Full Name" {...register("fullName")} />
@@ -59,7 +62,11 @@ export default function Register() {
             )}
           </div>
           <div>
-            <Input type="password" placeholder="Password" {...register("password")} />
+            <Input
+              type="password"
+              placeholder="Password"
+              {...register("password")}
+            />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
@@ -77,7 +84,6 @@ export default function Register() {
             Login
           </Link>
         </p>
-
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ClipboardList, Clock, CheckCircle } from "lucide-react";
-import { useAuth } from "@/components/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 export default function OfficerDashboardHome() {
   const { user } = useAuth();
   const [complaints, setComplaints] = useState([]);

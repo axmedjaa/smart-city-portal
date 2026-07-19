@@ -1,4 +1,4 @@
-import { useAuth } from "@/components/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import CitizenDashboard from "./citizen/Dashboard";
 import AdminDashboard from "./admin/Dashboard";
 import OfficerDashboard from "./officer/Dashboard";

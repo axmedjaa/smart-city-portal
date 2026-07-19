@@ -5,7 +5,7 @@ import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from 'sonner'
-import { AuthProvider } from './components/AuthProvider.jsx'
+import { AuthProvider } from './context/AuthProvider.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

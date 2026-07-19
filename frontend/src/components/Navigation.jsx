@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useAuth } from "./useAuth";
+import { useAuth } from "@/hooks/useAuth";
 const Navigation = () => {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);

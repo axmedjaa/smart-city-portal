@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import api from "@/api/api";
 import { toast } from "sonner";
-import { useAuth } from "@/components/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -28,9 +28,13 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       const response = await api.post("/auth/login", data);
-      localStorage.setItem("token", response.data);
+      const token = typeof response.data === "object" ? response.data.token : response.data;
+      if (!token) {
+        throw new Error("No token received from backend");
+      }
+      localStorage.setItem("token", token);
       toast.success("Login successful!");
-       await loadProfile();
+      await loadProfile();
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);

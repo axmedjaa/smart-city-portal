@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import api from "@/api/api";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Input } from "@/components/ui/input";
-
 import { Button } from "@/components/ui/button";
 
 import { Trash2, Pencil, UserPlus } from "lucide-react";
@@ -15,57 +13,54 @@ import { toast } from "sonner";
 const Officers = () => {
   const [officers, setOfficers] = useState([]);
 
+  const [departments, setDepartments] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
 
-  const [form, setForm] = useState({
+  const [form, setForm] =useState({
     fullName: "",
 
     email: "",
 
     password: "",
 
-    departmentName: "",
+    departmentId: "",
   });
 
-  // LOAD OFFICERS
-
+  // Load officers + departments
   useEffect(() => {
-    let active = true;
+    const loadData = async () => {
+    try {
+      const [usersResponse, departmentsResponse] = await Promise.all([
+        api.get("/users"),
+        api.get("/departments"),
+      ]);
 
-    const fetchOfficers = async () => {
-      try {
-        const response = await api.get("/users");
+      setOfficers(
+        usersResponse.data.filter((user) => user.role === "OFFICER")
+      );
 
-        const data = response.data.filter((user) => user.role === "OFFICER");
+      setDepartments(departmentsResponse.data);
+    } catch (error) {
+      console.log(error);
 
-        if (active) {
-          setOfficers(data);
-        }
-      } catch (error) {
-        console.log(error);
-
-        if (active) {
-          toast.error("Failed to load officers");
-        }
-      }
-    };
-
-    fetchOfficers();
-
-    return () => {
-      active = false;
-    };
+      toast.error("Failed to load data");
+    }
+  };
+    loadData();
   }, []);
 
-  // REFRESH
+  
 
   const refreshOfficers = async () => {
     try {
       const response = await api.get("/users");
 
-      setOfficers(response.data.filter((user) => user.role === "OFFICER"));
+      setOfficers(
+        response.data.filter((user) => user.role === "OFFICER")
+      );
     } catch (error) {
       console.log(error);
     }
@@ -79,9 +74,14 @@ const Officers = () => {
     });
   };
 
-  // CREATE
-
+  // Create
   const createOfficer = async () => {
+    if (!form.departmentId) {
+      toast.error("Please select a department");
+
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -94,14 +94,14 @@ const Officers = () => {
 
         role: "OFFICER",
 
-        departmentName: form.departmentName,
+        departmentId: Number(form.departmentId),
       });
 
       toast.success("Officer created successfully");
 
       clearForm();
 
-      await refreshOfficers();
+      refreshOfficers();
     } catch (error) {
       console.log(error);
 
@@ -111,8 +111,7 @@ const Officers = () => {
     }
   };
 
-  // EDIT
-
+  // Edit
   const editOfficer = (officer) => {
     setEditingId(officer.id);
 
@@ -123,39 +122,40 @@ const Officers = () => {
 
       password: "",
 
-      departmentName: officer.department?.name || "",
+      departmentId: officer.department?.id || "",
     });
   };
 
-  // UPDATE
-
+  // Update
   const updateOfficer = async () => {
+    if (!form.departmentId) {
+      toast.error("Please select a department");
+
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await api.put(
-        `/users/${editingId}`,
+      await api.put(`/users/${editingId}`, {
+        fullName: form.fullName,
 
-        {
-          fullName: form.fullName,
+        email: form.email,
 
-          email: form.email,
+        role: "OFFICER",
 
-          role: "OFFICER",
+        departmentId: Number(form.departmentId),
 
-          departmentName: form.departmentName,
-
-          ...(form.password && {
-            password: form.password,
-          }),
-        },
-      );
+        ...(form.password && {
+          password: form.password,
+        }),
+      });
 
       toast.success("Officer updated successfully");
 
       clearForm();
 
-      await refreshOfficers();
+      refreshOfficers();
     } catch (error) {
       console.log(error);
 
@@ -165,13 +165,16 @@ const Officers = () => {
     }
   };
 
-  // DELETE
-
+  // Delete
   const deleteOfficer = async (id) => {
+    if (!window.confirm("Delete this officer?")) return;
+
     try {
       await api.delete(`/users/${id}`);
+
       toast.success("Officer deleted");
-      await refreshOfficers();
+
+      refreshOfficers();
     } catch (error) {
       console.log(error);
 
@@ -189,21 +192,25 @@ const Officers = () => {
 
       password: "",
 
-      departmentName: "",
+      departmentId: "",
     });
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Officers Management</h1>
+        <h1 className="text-3xl font-bold">
+          Officers Management
+        </h1>
 
-        <p className="text-muted-foreground">Create and manage officers</p>
+        <p className="text-muted-foreground">
+          Create and manage officers
+        </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex gap-2 items-center">
+          <CardTitle className="flex items-center gap-2">
             <UserPlus className="h-5 w-5" />
 
             {editingId ? "Update Officer" : "Create Officer"}
@@ -221,6 +228,7 @@ const Officers = () => {
           <Input
             placeholder="Email"
             name="email"
+            type="email"
             value={form.email}
             onChange={handleChange}
           />
@@ -233,28 +241,57 @@ const Officers = () => {
             onChange={handleChange}
           />
 
-          <Input
-            placeholder="Department Name"
-            name="departmentName"
-            value={form.departmentName}
+          <select
+            name="departmentId"
+            value={form.departmentId}
             onChange={handleChange}
-          />
+            className="
+              w-full
+              h-10
+              rounded-md
+              border
+              border-input
+              bg-background
+              px-3
+              text-sm
+            "
+          >
+            <option value="">
+              Select Department
+            </option>
+
+            {departments.map((department) => (
+              <option
+                key={department.id}
+                value={department.id}
+              >
+                {department.name}
+              </option>
+            ))}
+          </select>
 
           <div className="flex gap-3">
             <Button
               className="flex-1"
               disabled={loading}
-              onClick={editingId ? updateOfficer : createOfficer}
+              onClick={
+                editingId
+                  ? updateOfficer
+                  : createOfficer
+              }
             >
               {loading
                 ? "Saving..."
                 : editingId
-                  ? "Update Officer"
-                  : "Create Officer"}
+                ? "Update Officer"
+                : "Create Officer"}
             </Button>
 
             {editingId && (
-              <Button variant="outline" onClick={clearForm}>
+              <Button
+                variant="outline"
+                onClick={clearForm}
+              >
                 Cancel
               </Button>
             )}
@@ -264,37 +301,43 @@ const Officers = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Officers</CardTitle>
+          <CardTitle>
+            All Officers
+          </CardTitle>
         </CardHeader>
 
         <CardContent>
-          <div className="space-y-4">
-            {officers.length === 0 ? (
-              <p className="text-center text-muted-foreground">
-                No officers found
-              </p>
-            ) : (
-              officers.map((officer) => (
+          {officers.length === 0 ? (
+            <p className="text-center text-muted-foreground">
+              No officers found
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {officers.map((officer) => (
                 <div
                   key={officer.id}
                   className="
-                border
-                rounded-xl
-                p-4
-                flex
-                justify-between
-                items-center
-                "
+                    border
+                    rounded-xl
+                    p-4
+                    flex
+                    justify-between
+                    items-center
+                  "
                 >
                   <div>
-                    <h3 className="font-semibold">{officer.fullName}</h3>
+                    <h3 className="font-semibold">
+                      {officer.fullName}
+                    </h3>
 
                     <p className="text-sm text-muted-foreground">
                       {officer.email}
                     </p>
 
                     <p className="text-sm">
-                      Department: {officer.department?.name || "No department"}
+                      Department:{" "}
+                      {officer.department?.name ??
+                        "No Department"}
                     </p>
                   </div>
 
@@ -302,7 +345,9 @@ const Officers = () => {
                     <Button
                       size="icon"
                       variant="outline"
-                      onClick={() => editOfficer(officer)}
+                      onClick={() =>
+                        editOfficer(officer)
+                      }
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -310,15 +355,17 @@ const Officers = () => {
                     <Button
                       size="icon"
                       variant="destructive"
-                      onClick={() => deleteOfficer(officer.id)}
+                      onClick={() =>
+                        deleteOfficer(officer.id)
+                      }
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

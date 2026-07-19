@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-import { useAuth } from "@/components/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   {
