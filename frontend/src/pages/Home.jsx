@@ -7,7 +7,7 @@ import CTASection from "@/components/home/CTASection";
 
 const Home = () => {
   return (
-  <main className="overflow-x-hidden">
+    <main >
       <HeroSection />
 
       <FeaturesSection />
