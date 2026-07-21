@@ -27,23 +27,41 @@ const HeroSection = () => {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
-  <Button
-    asChild
-    size="lg"
-    className="bg-blue-600 text-white hover:bg-blue-700"
-  >
-    <Link to="/register" className="flex items-center whitespace-nowrap">
-      Get Started
-      <ArrowRight className="ml-2 h-5 w-5" />
-    </Link>
-  </Button>
+              <Button
+                asChild
+                size="lg"
+                className="bg-blue-600 text-white hover:bg-blue-700"
+              >
+                <Link
+                  to="/register"
+                  className="flex items-center whitespace-nowrap"
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
 
-  <Button variant="outline" size="lg" asChild>
-    <Link to="/about" className="whitespace-nowrap">
-      Learn More
-    </Link>
-  </Button>
-</div>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="
+                bg-background
+                text-foreground
+                border-border
+                hover:bg-accent
+                hover:text-accent-foreground
+                dark:bg-transparent
+                dark:text-white
+                dark:border-white/40
+                dark:hover:bg-white/10
+              "
+              >
+                <Link to="/about" className="whitespace-nowrap">
+                  Learn More
+                </Link>
+              </Button>
+            </div>
             <div className="mt-10 flex gap-8">
               <div>
                 <h3 className="text-3xl font-bold text-blue-600">24/7</h3>
