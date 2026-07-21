@@ -2,12 +2,13 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "lucide-react";
 export function ModeToggle() {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
+  const {setTheme , resolvedTheme} = useTheme();
+  const isDark = resolvedTheme === "dark";
   return (
     <Button
       variant="outline"
       onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label="Toggle theme"
     >
       {
         isDark ? (
