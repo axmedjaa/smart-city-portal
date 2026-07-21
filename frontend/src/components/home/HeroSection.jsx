@@ -42,20 +42,18 @@ const HeroSection = () => {
               </Button>
 
               <Button
-                variant="outline"
-                size="lg"
                 asChild
+                size="lg"
                 className="
-                bg-background
-                text-foreground
-                border-border
-                hover:bg-accent
-                hover:text-accent-foreground
-                dark:bg-transparent
-                dark:text-white
-                dark:border-white/40
-                dark:hover:bg-white/10
-              "
+                bg-white 
+                text-black 
+                border 
+                border-gray-300
+                hover:bg-gray-100
+                dark:bg-white
+                dark:text-black
+                dark:hover:bg-gray-200
+  "
               >
                 <Link to="/about" className="whitespace-nowrap">
                   Learn More
