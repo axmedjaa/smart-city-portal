@@ -9,7 +9,7 @@ import { AuthProvider } from './context/AuthProvider.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
        <Toaster />
        <AuthProvider>
     <App />
