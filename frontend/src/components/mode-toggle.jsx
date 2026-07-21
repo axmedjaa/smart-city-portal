@@ -9,7 +9,13 @@ export function ModeToggle() {
       variant="outline"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? <SunIcon /> : <MoonIcon />}
+      {
+        isDark ? (
+          <SunIcon className="w-4 h-4" />
+        ) : (
+          <MoonIcon className="w-4 h-4" />
+        )
+      }
     </Button>
   );
 }
