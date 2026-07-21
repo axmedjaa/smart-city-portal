@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import {
   LayoutDashboard,
   PlusCircle,
   FileText,
   User,
-  Menu,
   LogOut,
+  ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -32,25 +33,18 @@ const navItems = [
   },
 ];
 
-function SidebarContent({
-  user,
-  currentPath,
-  onCloseMobile,
-  onLogout,
-}) {
+function SidebarContent({ user, currentPath, onCloseMobile, onLogout }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="mb-4">
-        <h2 className="text-lg font-bold">Citizen Panel</h2>
+      <div className="mb-5">
+        <h2 className="text-xl font-bold">Citizen Panel</h2>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground mt-2">
           Welcome, {user?.fullName}
         </p>
 
-        <p className="text-xs text-muted-foreground">
-          {user?.email}
-        </p>
+        <p className="text-xs text-muted-foreground">{user?.email}</p>
       </div>
 
       <Separator className="mb-4" />
@@ -61,47 +55,34 @@ function SidebarContent({
           const Icon = item.icon;
 
           return (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={onCloseMobile}
-            >
+            <Link key={item.path} to={item.path} onClick={onCloseMobile}>
               <Button
-                variant={
-                  currentPath === item.path
-                    ? "default"
-                    : "ghost"
-                }
+                variant={currentPath === item.path ? "default" : "ghost"}
                 className="w-full justify-start gap-2"
               >
                 <Icon className="w-4 h-4" />
+
                 {item.label}
               </Button>
             </Link>
           );
         })}
-      </div>
 
-      {/* Bottom */}
-      <div className="mt-auto">
-        <Separator className="my-4" />
-
-        <Link
-          to="/citizen/profile"
-          onClick={onCloseMobile}
-        >
+        {/* Profile */}
+        <Link to="/citizen/profile" onClick={onCloseMobile}>
           <Button
-            variant={
-              currentPath === "/citizen/profile"
-                ? "default"
-                : "ghost"
-            }
-            className="w-full justify-start gap-2 mb-2"
+            variant={currentPath === "/citizen/profile" ? "default" : "ghost"}
+            className="w-full justify-start gap-2"
           >
             <User className="w-4 h-4" />
             Profile
           </Button>
         </Link>
+      </div>
+
+      {/* Logout */}
+      <div className="mt-auto">
+        <Separator className="my-4" />
 
         <Button
           variant="destructive"
@@ -115,25 +96,35 @@ function SidebarContent({
     </div>
   );
 }
+
 export default function CitizenSidebar() {
   const location = useLocation();
+
   const navigate = useNavigate();
+
   const { user, logout } = useAuth();
+
   const [open, setOpen] = useState(false);
+
   const handleLogout = () => {
     logout();
+
     setOpen(false);
+
     navigate("/login");
   };
 
   return (
     <>
-      {/* Mobile Menu */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      {/* Mobile Sidebar */}
+      <div className="md:hidden fixed left-0 top-20 -translate-y-1/2 z-50">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <Menu className="w-5 h-5" />
+            <Button
+              variant="secondary"
+              className="rounded-r-full rounded-l-none h-16 w-8 shadow-lg"
+            >
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </SheetTrigger>
 
@@ -147,6 +138,7 @@ export default function CitizenSidebar() {
           </SheetContent>
         </Sheet>
       </div>
+
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-64 h-screen border-r bg-background p-4 flex-col">
         <SidebarContent
