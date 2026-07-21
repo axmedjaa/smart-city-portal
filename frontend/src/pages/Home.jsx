@@ -7,7 +7,7 @@ import CTASection from "@/components/home/CTASection";
 
 const Home = () => {
   return (
-    <main className="py-20">
+  <main className="overflow-x-hidden">
       <HeroSection />
 
       <FeaturesSection />
