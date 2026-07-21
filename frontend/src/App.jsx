@@ -23,6 +23,7 @@ import Departments from "./pages/dashboard/admin/Departments";
 import Categories from "./pages/dashboard/admin/Categories";
 import Complaints from "./pages/dashboard/admin/Complaints";
 import Footer from "./components/Footer";
+import Error from "./pages/Error";
 function App() {
   return (
     <div>
@@ -87,6 +88,7 @@ function App() {
           <Route path="complaints" element={<Complaints />} />
           <Route path="profile" element={<Profile />} />
         </Route>  
+        <Route path="*" element={<Error />} />
       </Routes>
       <Footer />
     </div>
