@@ -7,7 +7,7 @@ import CTASection from "@/components/home/CTASection";
 
 const Home = () => {
   return (
-    <main>
+    <main className="py-20">
       <HeroSection />
 
       <FeaturesSection />
