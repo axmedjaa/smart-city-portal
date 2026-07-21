@@ -88,7 +88,7 @@ function App() {
           <Route path="complaints" element={<Complaints />} />
           <Route path="profile" element={<Profile />} />
         </Route>  
-        <Route path="*" element={<Error />} />
+        <Route path="*" element={ <Error />} />
       </Routes>
       <Footer />
     </div>

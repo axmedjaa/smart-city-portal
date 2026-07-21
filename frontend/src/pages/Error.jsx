@@ -35,7 +35,7 @@ const Error = () => {
           </p>
 
           <Button asChild className="w-full">
-            <Link to="/">
+            <Link to="/" className="flex items-center justify-center gap-2">
               <Home className="mr-2 h-4 w-4" />
               Back To Home
             </Link>
