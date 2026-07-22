@@ -9,12 +9,9 @@ export default function MyComplaints() {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const response = await api.get("/complaints/my", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await api.get("/complaints/my");
         setComplaints(response.data);
+        console.log(response.data);
       } catch (error) {
         console.log(error);
         toast.error("Failed to load complaints");
@@ -74,7 +71,7 @@ export default function MyComplaints() {
                   <strong>Priority:</strong> {complaint.priority}
                 </p>
                 <p>
-                  <strong>Category:</strong> {complaint.categoryName}
+                  <strong>Category:</strong> {complaint.category}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {formatDate(complaint.createdAt)}
