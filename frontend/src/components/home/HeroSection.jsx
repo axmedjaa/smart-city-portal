@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, MapPinned } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -77,8 +77,28 @@ const HeroSection = () => {
 
           {/* Right Content */}
           <div className="flex justify-center">
-            <div className="flex h-96 w-96 items-center justify-center rounded-full bg-blue-100 shadow-xl">
-              <MapPinned className="h-40 w-40 text-blue-600" />
+            {/* The circular container  */}
+            <div className="
+                flex 
+                aspect-square 
+                w-full 
+                max-w-[280px] /* Prevents mobile overflow */
+                sm:max-w-[384px] /* Original size for larger screens */
+                items-center 
+                justify-center 
+                rounded-full 
+                bg-blue-100 
+                shadow-xl 
+                p-6 
+                sm:p-8 
+                overflow-hidden /* Clips image to the circle */
+            ">
+              <img 
+                // image source located in public folder
+                src="/hero-banner.4a7e9cb0.webp" 
+                alt="Connected Smart City Illustration" 
+                className="w-full h-full object-cover" 
+              />
             </div>
           </div>
         </div>
