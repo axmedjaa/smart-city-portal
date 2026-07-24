@@ -1,7 +1,8 @@
 import axios from "axios";
+const url = import.meta.env.VITE_API_URL;
 const api = axios.create(
     { 
-        baseURL: "https://smart-city-portal-production.up.railway.app/api", 
+        baseURL: url || "http://localhost:8080/api", 
     }
 );
 api.interceptors.request.use(

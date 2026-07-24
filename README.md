@@ -1,14 +1,16 @@
 # Smart City Complaint & Service Portal
 
-A full-stack web application built with **Spring Boot**, **React.js**, and **PostgreSQL** that enables citizens to report city issues, allows department officers to manage complaints, and provides administrators with system management, analytics, and complaint tracking.
+A modern full-stack web application built with **Spring Boot**, **React.js**, and **PostgreSQL** that enables citizens to report city issues, department officers to manage complaints, and administrators to monitor the entire system through a secure role-based dashboard.
 
 ---
 
 # Project Overview
 
-The Smart City Complaint & Service Portal provides an online platform where citizens can report public issues, monitor complaint status, and communicate with local authorities.
+The Smart City Complaint & Service Portal digitizes the complaint management process by providing a centralized platform for citizens and government departments.
 
-The application implements secure JWT authentication, role-based authorization, complaint management, analytics, and SLA monitoring.
+Citizens can submit complaints regarding public services such as roads, sanitation, water supply, and utilities. Department officers receive and manage assigned complaints, while administrators oversee users, departments, categories, and overall system statistics.
+
+The application uses JWT authentication, Spring Security, and role-based authorization to ensure secure access to resources.
 
 ---
 
@@ -25,7 +27,7 @@ The application implements secure JWT authentication, role-based authorization, 
 - PostgreSQL
 - Maven
 - Lombok
-- Bean Validation
+- Jakarta Bean Validation
 
 ## Frontend
 
@@ -38,6 +40,39 @@ The application implements secure JWT authentication, role-based authorization, 
 - React Hook Form
 - Zod
 - Sonner
+- EmailJS used for contact
+
+
+---
+
+# Project Architecture
+
+```text
+                   React.js Frontend
+                           │
+                           │
+                  Axios + JWT Token
+                           │
+                           ▼
+               Spring Boot REST API
+                           │
+        ┌──────────────────┼──────────────────┐
+        ▼                  ▼                  ▼
+   Controllers         Service Layer      Spring Security
+        │                  │                  │
+        └──────────────► Repository ◄─────────┘
+                           │
+                           ▼
+                    PostgreSQL Database
+```
+
+## Architecture Layers
+
+- Presentation Layer (React.js)
+- REST API Layer (Spring Boot Controllers)
+- Business Logic Layer (Services)
+- Data Access Layer (Repositories)
+- Database Layer (PostgreSQL)
 
 ---
 
@@ -45,11 +80,11 @@ The application implements secure JWT authentication, role-based authorization, 
 
 ## Public
 
-- Home
-- About
-- Contact
-- Register
-- Login
+- Home Page
+- About Page
+- Contact Page
+- User Registration
+- User Login
 
 ## Citizen
 
@@ -66,33 +101,37 @@ The application implements secure JWT authentication, role-based authorization, 
 
 ## Administrator
 
-- Dashboard
+- Dashboard Overview
 - Manage Users
-- Manage Categories
 - Manage Departments
+- Manage Categories
 - View All Complaints
 - Delete Complaints
-- Analytics Dashboard
-- SLA Monitoring
+- Complaint Statistics
 
 ---
 
 # Authentication & Security
 
 - JWT Authentication
-- BCrypt Password Encryption
 - Spring Security
+- BCrypt Password Encryption
+- Stateless Authentication
 - Role-Based Authorization
-- Protected Routes
+- Protected React Routes
 - Axios JWT Interceptor
+- Global Exception Handling
+- Request Validation
 
 ---
 
 # User Roles
 
-- ADMIN
-- OFFICER
-- CITIZEN
+| Role | Permissions |
+|------|-------------|
+| ADMIN | Full system access |
+| OFFICER | Manage assigned complaints |
+| CITIZEN | Submit and track complaints |
 
 ---
 
@@ -101,16 +140,18 @@ The application implements secure JWT authentication, role-based authorization, 
 ```text
 backend/
 │
-├── config
-├── controller
-├── dto
-├── entity
-├── enums
-├── exception
-├── repository
-├── security
-├── service
-└── BackendApplication.java
+├── controller/
+├── dto/
+├── entity/
+├── enums/
+├── exception/
+├── repository/
+├── security/
+├── service/
+├── BackendApplication.java
+│
+├── pom.xml
+└── application.properties
 ```
 
 ---
@@ -123,37 +164,43 @@ frontend/
 ├── public/
 │
 ├── src/
-│   │
-│   ├── api/
-│   │   └── api.js
-│   │
-│   ├── assets/
-│   │
-│   ├── components/
-│   │   ├── dashboard/
-│   │   ├── home/
-│   │   ├── ui/
-│   │   ├── AuthContext.jsx
-│   │   ├── AuthProvider.jsx
-│   │   ├── Footer.jsx
-│   │   ├── Navigation.jsx
-│   │   ├── ProtectedRoute.jsx
-│   │   ├── PublicOnlyRoute.jsx
-│   │   ├── theme-provider.jsx
-│   │   ├── mode-toggle.jsx
-│   │   └── useAuth.js
-│   │
-│   ├── lib/
-│   │
-│   ├── pages/
-│   │
-│   ├── App.jsx
-│   ├── App.css
-│   ├── index.css
-│   └── main.jsx
+│
+├── api/
+│   └── api.js
+│
+├── assets/
+│
+├── components/
+│   ├── dashboard/
+│   ├── home/
+│   ├── ui/
+│   ├── Footer.jsx
+│   ├── Navigation.jsx
+│   ├── ProtectedRoute.jsx
+│   ├── PublicOnlyRoute.jsx
+│   ├── mode-toggle.jsx
+│   └── theme-provider.jsx
+│
+├── context/
+│   ├── AuthContext.jsx
+│   └── AuthProvider.jsx
+│
+├── hooks/
+│   └── useAuth.js
+│
+├── lib/
+│
+├── pages/
+│
+├── App.jsx
+├── main.jsx
+├── App.css
+└── index.css
 │
 ├── package.json
-└── vite.config.js
+├── .env
+├── vite.config.js
+└── jsconfig.json
 ```
 
 ---
@@ -161,72 +208,164 @@ frontend/
 # Database Tables
 
 - users
-- categories
 - departments
+- categories
 - complaints
+
+---
+# Database Relationships
+
+```text
+                     Department
+                   ┌─────────────┐
+                   │ id          │
+                   │ name        │
+                   └──────┬──────┘
+                          │ 1
+                          │
+                    has many
+                          │
+                          ▼
+                    ┌─────────────┐
+                    │    User     │
+                    ├─────────────┤
+                    │ id          │
+                    │ fullName    │
+                    │ email       │
+                    │ password    │
+                    │ role        │
+                    │department_id│
+                    └──────┬──────┘
+                           │ 1
+                           │
+                    submits many
+                           │
+                           ▼
+                   ┌────────────────┐
+                   │   Complaint    │
+                   ├────────────────┤
+                   │ id             │
+                   │ title          │
+                   │ description    │
+                   │ location       │
+                   │ priority       │
+                   │ status         │
+                   │ createdAt      │
+                   │ user_id        │
+                   │ category_id    │
+                   │ department_id  │
+                   └──────┬─────────┘
+                          │
+                          │
+                  belongs to
+                          │
+                          ▼
+                 ┌─────────────┐
+                 │  Category   │
+                 ├─────────────┤
+                 │ id          │
+                 │ name        │
+                 └─────────────┘
+```
+### Entity Relationships
+- One **Department** has many **Users**.
+- One **Department** manages many **Complaints**.
+- One **User** can submit many **Complaints**.
+- One **Category** contains many **Complaints**.
+- Every **Complaint** belongs to one **User**, one **Department**, and one **Category**.
 ---
 # REST API
+
 ## Authentication
 
-```
+```http
 POST   /api/auth/register
 POST   /api/auth/login
 ```
+
 ## Profile
 
-```
-POST   /api/profile
-put   /api/profile
+```http
+GET    /api/profile
+PUT    /api/profile
 ```
 
 ## Users
 
-```
-GET
-GET/{id}
-POST
-PUT
-DELETE
-```
-
-## Categories
-
-```
-GET
-GET/{id}
-POST
-PUT
-DELETE
+```http
+GET    /api/users
+GET    /api/users/{id}
+POST   /api/users
+PUT    /api/users/{id}
+DELETE /api/users/{id}
 ```
 
 ## Departments
 
+```http
+GET    /api/departments
+GET    /api/departments/{id}
+POST   /api/departments
+PUT    /api/departments/{id}
+DELETE /api/departments/{id}
 ```
-GET
-GET/{id}
-POST
-PUT
-DELETE
+
+## Categories
+
+```http
+GET    /api/categories
+GET    /api/categories/{id}
+POST   /api/categories
+PUT    /api/categories/{id}
+DELETE /api/categories/{id}
 ```
 
 ## Complaints
 
-```
-GET
-GET/{id}
-GET/my
-GET/officer
-POST
-PATCH/{id}/status
-DELETE/{id}
+```http
+GET     /api/complaints
+GET     /api/complaints/{id}
+GET     /api/complaints/my
+GET     /api/complaints/officer
+POST    /api/complaints
+PATCH   /api/complaints/{id}/status
+DELETE  /api/complaints/{id}
 ```
 
 ## Dashboard
 
-```
+```http
 GET /api/dashboard
 GET /api/dashboard/sla
 ```
+
+---
+
+# Environment Variables
+
+## Backend
+
+Configure the following properties inside `application.properties`.
+
+```properties
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+
+jwt.secret=
+jwt.expiration=86400000
+```
+
+## Frontend
+
+Create a `.env` file.
+
+```env
+API_URL=http://localhost:8080/api
+```
+
+---
+
 # Installation
 
 ## Clone Repository
@@ -235,33 +374,32 @@ GET /api/dashboard/sla
 git clone https://github.com/axmedjaa/smart-city-portal.git
 ```
 
+Move into the project directory.
+
+```bash
+cd smart-city-portal
+```
+
 ---
 
-## Backend
+## Backend Setup
+
+Navigate to the backend.
 
 ```bash
 cd backend
 ```
-Run the backend
+
+Install dependencies.
+
+```bash
+mvn clean install
+```
+
+Run the application.
 
 ```bash
 mvn spring-boot:run
-```
-
----
-
-## Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend URL
-
-```
-http://localhost:5173
 ```
 
 Backend URL
@@ -272,32 +410,84 @@ http://localhost:8080
 
 ---
 
+## Frontend Setup
+
+Open another terminal.
+
+```bash
+cd frontend
+```
+
+Install dependencies.
+
+```bash
+npm install
+```
+
+Run the development server.
+
+```bash
+npm run dev
+```
+
+Frontend URL
+
+```
+http://localhost:5173
+```
+
+---
+
 # Application Workflow
 
-1. User registers an account.
-2. User logs in and receives a JWT token.
-3. Axios automatically attaches the JWT token to every protected request.
-4. Citizens submit complaints.
-5. Complaints are assigned to the responsible department.
-6. Officers update complaint status and priority.
-7. Administrators manage users, departments, and categories while monitoring analytics and SLA performance.
-8. Citizens track the progress of their submitted complaints.
+1. User registers a new account.
+2. User logs into the system.
+3. Server generates a JWT token.
+4. React stores the token.
+5. Axios automatically sends the JWT with protected requests.
+6. Citizens submit complaints.
+7. Complaints are assigned to departments.
+8. Officers manage complaint status.
+9. Administrators monitor the entire system.
 
 ---
 
 # Security Features
 
 - JWT Authentication
-- Stateless Session Management
-- BCrypt Password Hashing
-- Protected REST APIs
+- Stateless Authentication
+- BCrypt Password Encryption
+- Spring Security
 - Role-Based Authorization
-- Global Exception Handling
+- Protected REST Endpoints
+- Protected React Routes
 - Request Validation
+- Global Exception Handling
 
 ---
 
-## Authors
+# Live Demo
+
+| Service | URL |
+|----------|-----|
+| Frontend | https://smartcity11.netlify.app/ |
+| Backend | https://smart-city-portal-production.up.railway.app/api |
+
+---
+# Future Improvements
+
+- Email Notifications
+- Complaint Comments
+- Complaint Attachments
+- Interactive City Map
+- Real-time Notifications
+- Analytics Charts
+- Mobile Application
+- SMS Notifications
+
+---
+
+# Authors
 
 - Ahmed Mohamed Ibrahim
 - Abdiwasac Abdulkadir Omar
@@ -309,6 +499,12 @@ Developed as a Full-Stack Group Project using Spring Boot, React.js, and Postgre
 
 ---
 
+# License
+
+This project was developed for educational purposes as part of a university Full-Stack Software Engineering project.
+
+---
+
 # Repository Structure
 
 ```text
@@ -316,8 +512,9 @@ smart-city-portal/
 │
 ├── backend/
 ├── frontend/
+├── screenshots/
 ├── README.md
 ├── ERD.png
-├── REPORT.pdf
+├── smart_city_project_report_v4.pdf
 └── PRESENTATION.pptx
 ```
