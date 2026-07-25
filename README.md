@@ -1,3 +1,5 @@
+# repo
+https://github.com/axmedjaa/smart-city-portal
 # Smart City Complaint & Service Portal
 
 A modern full-stack web application built with **Spring Boot**, **React.js**, and **PostgreSQL** that enables citizens to report city issues, department officers to manage complaints, and administrators to monitor the entire system through a secure role-based dashboard.
@@ -512,9 +514,8 @@ smart-city-portal/
 │
 ├── backend/
 ├── frontend/
-├── screenshots/
 ├── README.md
 ├── ERD.png
 ├── smart_city_project_report_v4.pdf
-└── PRESENTATION.pptx
+├──Smart City Complaint & service Portal.pptx presentation
 ```
