@@ -19,6 +19,7 @@ public class UserRequestDTO {
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
     private String email;
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
     private Role role;
     private Long departmentId;

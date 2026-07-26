@@ -82,9 +82,15 @@ const Categories = () => {
 
       loadCategories();
     } catch (error) {
-      console.log(error);
+      const data = error.response?.data;
 
-      toast.error(error.response?.data?.message || "Operation failed");
+      if (data?.messages) {
+        Object.values(data.messages).forEach((msg) => {
+          toast.error(msg);
+        });
+      } else {
+        toast.error(data?.message || "Create failed");
+      }
     } finally {
       setLoading(false);
     }

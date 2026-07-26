@@ -19,7 +19,7 @@ const Officers = () => {
 
   const [editingId, setEditingId] = useState(null);
 
-  const [form, setForm] =useState({
+  const [form, setForm] = useState({
     fullName: "",
 
     email: "",
@@ -32,35 +32,31 @@ const Officers = () => {
   // Load officers + departments
   useEffect(() => {
     const loadData = async () => {
-    try {
-      const [usersResponse, departmentsResponse] = await Promise.all([
-        api.get("/users"),
-        api.get("/departments"),
-      ]);
+      try {
+        const [usersResponse, departmentsResponse] = await Promise.all([
+          api.get("/users"),
+          api.get("/departments"),
+        ]);
 
-      setOfficers(
-        usersResponse.data.filter((user) => user.role === "OFFICER")
-      );
+        setOfficers(
+          usersResponse.data.filter((user) => user.role === "OFFICER"),
+        );
 
-      setDepartments(departmentsResponse.data);
-    } catch (error) {
-      console.log(error);
+        setDepartments(departmentsResponse.data);
+      } catch (error) {
+        console.log(error);
 
-      toast.error("Failed to load data");
-    }
-  };
+        toast.error("Failed to load data");
+      }
+    };
     loadData();
   }, []);
-
-  
 
   const refreshOfficers = async () => {
     try {
       const response = await api.get("/users");
 
-      setOfficers(
-        response.data.filter((user) => user.role === "OFFICER")
-      );
+      setOfficers(response.data.filter((user) => user.role === "OFFICER"));
     } catch (error) {
       console.log(error);
     }
@@ -103,9 +99,15 @@ const Officers = () => {
 
       refreshOfficers();
     } catch (error) {
-      console.log(error);
+      const data = error.response?.data;
 
-      toast.error(error.response?.data?.message || "Create failed");
+      if (data?.messages) {
+        Object.values(data.messages).forEach((msg) => {
+          toast.error(msg);
+        });
+      } else {
+        toast.error(data?.message || "Create failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -199,13 +201,9 @@ const Officers = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">
-          Officers Management
-        </h1>
+        <h1 className="text-3xl font-bold">Officers Management</h1>
 
-        <p className="text-muted-foreground">
-          Create and manage officers
-        </p>
+        <p className="text-muted-foreground">Create and manage officers</p>
       </div>
 
       <Card>
@@ -256,15 +254,10 @@ const Officers = () => {
               text-sm
             "
           >
-            <option value="">
-              Select Department
-            </option>
+            <option value="">Select Department</option>
 
             {departments.map((department) => (
-              <option
-                key={department.id}
-                value={department.id}
-              >
+              <option key={department.id} value={department.id}>
                 {department.name}
               </option>
             ))}
@@ -274,24 +267,17 @@ const Officers = () => {
             <Button
               className="flex-1"
               disabled={loading}
-              onClick={
-                editingId
-                  ? updateOfficer
-                  : createOfficer
-              }
+              onClick={editingId ? updateOfficer : createOfficer}
             >
               {loading
                 ? "Saving..."
                 : editingId
-                ? "Update Officer"
-                : "Create Officer"}
+                  ? "Update Officer"
+                  : "Create Officer"}
             </Button>
 
             {editingId && (
-              <Button
-                variant="outline"
-                onClick={clearForm}
-              >
+              <Button variant="outline" onClick={clearForm}>
                 Cancel
               </Button>
             )}
@@ -301,9 +287,7 @@ const Officers = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>
-            All Officers
-          </CardTitle>
+          <CardTitle>All Officers</CardTitle>
         </CardHeader>
 
         <CardContent>
@@ -326,18 +310,14 @@ const Officers = () => {
                   "
                 >
                   <div>
-                    <h3 className="font-semibold">
-                      {officer.fullName}
-                    </h3>
+                    <h3 className="font-semibold">{officer.fullName}</h3>
 
                     <p className="text-sm text-muted-foreground">
                       {officer.email}
                     </p>
 
                     <p className="text-sm">
-                      Department:{" "}
-                      {officer.department?.name ??
-                        "No Department"}
+                      Department: {officer.department?.name ?? "No Department"}
                     </p>
                   </div>
 
@@ -345,9 +325,7 @@ const Officers = () => {
                     <Button
                       size="icon"
                       variant="outline"
-                      onClick={() =>
-                        editOfficer(officer)
-                      }
+                      onClick={() => editOfficer(officer)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -355,9 +333,7 @@ const Officers = () => {
                     <Button
                       size="icon"
                       variant="destructive"
-                      onClick={() =>
-                        deleteOfficer(officer.id)
-                      }
+                      onClick={() => deleteOfficer(officer.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
