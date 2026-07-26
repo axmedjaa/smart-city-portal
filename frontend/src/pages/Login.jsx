@@ -38,7 +38,7 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Login failed!");
+      toast.error(error.response?.data?.message || "Registration failed!");
     }
   };
 
