@@ -36,8 +36,15 @@ export default function Register() {
       navigate("/");
       toast.success("Registration successful!");
     } catch (error) {
-      console.error("Registration error:", error);
-      toast.error(error.response?.data?.message || "Registration failed!");
+      const data = error.response?.data;
+
+      if (data?.messages) {
+        Object.values(data.messages).forEach((msg) => {
+          toast.error(msg);
+        });
+      } else {
+        toast.error(data?.message || "Create failed");
+      }
     }
   };
   return (

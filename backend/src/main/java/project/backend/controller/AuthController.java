@@ -1,5 +1,6 @@
 package project.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import project.backend.dto.LoginRequestDTO;
@@ -12,7 +13,7 @@ import project.backend.service.AuthService;
 public class AuthController {
     private final AuthService authService;
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequestDTO request) {
+    public String register(@Valid @RequestBody RegisterRequestDTO request) {
         return authService.register(request.getFullName(),request.getEmail(), request.getPassword());
     }
     @PostMapping("/login")
