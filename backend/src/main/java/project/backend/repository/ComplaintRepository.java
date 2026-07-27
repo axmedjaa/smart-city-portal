@@ -16,4 +16,5 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
             Status status
     );
     List<Complaint> findByDepartment(Department department);
+    boolean existsByUserId(Long userId);
 }

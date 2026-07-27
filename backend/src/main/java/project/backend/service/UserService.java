@@ -9,6 +9,7 @@ import project.backend.dto.UserResponseDTO;
 import project.backend.entity.Department;
 import project.backend.entity.User;
 import project.backend.enums.Role;
+import project.backend.repository.ComplaintRepository;
 import project.backend.repository.DepartmentRepository;
 import project.backend.repository.UserRepository;
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserService {
     private final UserRepository userRepo;
     private final BCryptPasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepo;
+    private final ComplaintRepository complaintRepository;
     public UserResponseDTO createUser(UserRequestDTO dto) {
         Optional<User> existingUser = userRepo.findByEmail(dto.getEmail());
         if (existingUser.isPresent()) {
@@ -68,7 +70,12 @@ public class UserService {
 
 
     public void delete(Long id) {
-        userRepo.deleteById(id);
+        if (complaintRepository.existsByUserId(id)) {
+            throw new RuntimeException("Cannot delete user because they have complaints");
+        }
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepo.delete(user);
     }
 
     public UserResponseDTO update(Long id, UserRequestDTO dto) {
