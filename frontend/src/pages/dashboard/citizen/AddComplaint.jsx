@@ -110,11 +110,15 @@ export default function AddComplaint() {
 
       navigate("/citizen/complaints");
     } catch (error) {
-      console.log("Submit error:", error);
+       const data = error.response?.data;
 
-      toast.error(
-        error?.response?.data?.message || "Failed to submit complaint",
-      );
+      if (data?.messages) {
+        Object.values(data.messages).forEach((msg) => {
+          toast.error(msg);
+        });
+      } else {
+        toast.error(data?.message || "Create failed");
+      }
     } finally {
       setLoading(false);
     }
