@@ -54,9 +54,15 @@ const OfficerProfile = () => {
 
         setProfile(response.data);
       } catch (error) {
-        console.log(error);
+         const data = error.response?.data;
 
-        toast.error("Failed to load profile");
+      if (data?.messages) {
+        Object.values(data.messages).forEach((msg) => {
+          toast.error(msg);
+        });
+      } else {
+        toast.error(data?.message || "Create failed");
+      }
       }
     };
 
