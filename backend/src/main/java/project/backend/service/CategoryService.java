@@ -8,6 +8,7 @@ import project.backend.dto.Category.CategoryResponseDTO;
 import project.backend.entity.Category;
 import project.backend.entity.Department;
 import project.backend.repository.CategoryRepository;
+import project.backend.repository.ComplaintRepository;
 import project.backend.repository.DepartmentRepository;
 
 import java.util.List;
@@ -16,20 +17,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-
     private final CategoryRepository categoryRepository;
     private final DepartmentRepository departmentRepository;
-
-
+    private final ComplaintRepository complaintRepository;
     public CategoryResponseDTO create(CategoryRequestDTO dto) {
-
         if(categoryRepository.existsByName(dto.getName())) {
             throw new RuntimeException(
                     "Category already exists"
             );
         }
-
-
         Department department =
                 departmentRepository.findById(dto.getDepartmentId())
                         .orElseThrow(() ->
@@ -37,12 +33,8 @@ public class CategoryService {
                                         "Department not found"
                                 )
                         );
-
-
         Category category = new Category();
-
         category.setName(dto.getName());
-
         category.setDepartment(department);
 
 
@@ -52,10 +44,6 @@ public class CategoryService {
 
         return mapToResponse(saved);
     }
-
-
-
-
     public List<CategoryResponseDTO> getAll() {
 
         return categoryRepository.findAll()
@@ -64,17 +52,10 @@ public class CategoryService {
                 .collect(Collectors.toList());
 
     }
-
-
-
-
-
     public CategoryResponseDTO update(
             Long id,
             CategoryRequestDTO dto
     ) {
-
-
         Category category =
                 categoryRepository.findById(id)
                         .orElseThrow(() ->
@@ -82,9 +63,6 @@ public class CategoryService {
                                         "Category not found"
                                 )
                         );
-
-
-
         Department department =
                 departmentRepository.findById(dto.getDepartmentId())
                         .orElseThrow(() ->
@@ -93,35 +71,23 @@ public class CategoryService {
                                 )
                         );
 
-
-
         category.setName(
                 dto.getName()
         );
-
-
         category.setDepartment(
                 department
         );
-
-
         Category updated =
                 categoryRepository.save(category);
-
-
-
         return mapToResponse(updated);
 
     }
-
-
-
-
-
-
-
     public void delete(Long id) {
-
+        if(complaintRepository.existsByCategoryId(id)) {
+            throw new RuntimeException(
+                    "Cannot delete category because it is assigned to one or more complaints"
+            );
+        }
         Category category =
                 categoryRepository.findById(id)
                         .orElseThrow(() ->
@@ -129,18 +95,8 @@ public class CategoryService {
                                         "Category not found"
                                 )
                         );
-
-
         categoryRepository.delete(category);
-
     }
-
-
-
-
-
-
-
     private CategoryResponseDTO mapToResponse(
             Category category
     ) {

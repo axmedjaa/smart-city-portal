@@ -123,7 +123,7 @@ const Departments = () => {
     } catch (error) {
       console.log(error);
 
-      toast.error("Delete failed");
+      toast.error(error?.response?.data?.message || "Delete failed");
     }
   };
 

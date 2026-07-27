@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import project.backend.dto.Department.DepartmentRequestDTO;
 import project.backend.dto.Department.DepartmentResponseDTO;
 import project.backend.entity.Department;
+import project.backend.repository.CategoryRepository;
 import project.backend.repository.DepartmentRepository;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
+    private final CategoryRepository categoryRepository;
 
     public DepartmentResponseDTO create(DepartmentRequestDTO dto) {
 
@@ -69,6 +71,9 @@ public class DepartmentService {
 
         if (!departmentRepository.existsById(id)) {
             throw new RuntimeException("Department not found");
+        }
+        if (categoryRepository.existsByDepartmentId(id)) {
+            throw new RuntimeException("can not delete Department because it has assigned categories");
         }
 
         departmentRepository.deleteById(id);

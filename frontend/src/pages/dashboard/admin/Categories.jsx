@@ -116,7 +116,7 @@ const Categories = () => {
     } catch (error) {
       console.log(error);
 
-      toast.error("Delete failed");
+      toast.error(error?.response?.data?.message || "Delete failed");
     }
   };
 
@@ -161,6 +161,7 @@ const Categories = () => {
             border
             rounded-md
             p-3
+            bg-background
             "
             name="departmentId"
             value={form.departmentId}

@@ -10,6 +10,7 @@ import java.util.List;
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
     List<Complaint> findByUserId(Long userId);
     long countByStatus(Status status);
+    boolean existsByCategoryId(Long categoryId);
     List<Complaint> findByCreatedAtBeforeAndStatusNot(
             LocalDateTime date,
             Status status
